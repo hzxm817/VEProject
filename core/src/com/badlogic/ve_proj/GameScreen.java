@@ -109,9 +109,9 @@ public class GameScreen implements Screen {
 
 		// make sure the bucket stays within the screen bounds
 		if (bucket.x < 0)
-			bucket.x = 0;
+			bucket.x = 800-64;
 		if (bucket.x > 800 - 64)
-			bucket.x = 800 - 64;
+			bucket.x = 0;
 
 		// check if we need to create a new raindrop
 		if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
