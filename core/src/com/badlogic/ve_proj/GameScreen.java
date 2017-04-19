@@ -21,23 +21,29 @@ public class GameScreen implements Screen {
 
 	Texture dropImage;
 	Texture bucketImage;
+        Texture coinImage;
 	Sound dropSound;
+        Sound coinSound;
 	Music rainMusic;
 	OrthographicCamera camera;
 	Rectangle bucket;
 	Array<Rectangle> raindrops;
+        Array<Rectangle> coins;
 	long lastDropTime;
+        long lastCoinTime;
 	int dropsGathered;
-
+        int coinsGathered;
+        
 	public GameScreen(final Drop gam) {
 		this.game = gam;
 
 		// load the images for the droplet and the bucket, 64x64 pixels each
 		dropImage = new Texture(Gdx.files.internal("droplet.png"));
 		bucketImage = new Texture(Gdx.files.internal("bucket.png"));
-
+                coinImage = new Texture(Gdx.files.internal("coin.png"));
 		// load the drop sound effect and the rain background "music"
 		dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
+                coinSound = Gdx.audio.newSound(Gdx.files.internal("coin.wav"));
 		rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
 		rainMusic.setLooping(true);
 
@@ -56,7 +62,8 @@ public class GameScreen implements Screen {
 		// create the raindrops array and spawn the first raindrop
 		raindrops = new Array<Rectangle>();
 		spawnRaindrop();
-
+                coins = new Array<Rectangle>();
+		spawnCoin();
 	}
 
 	private void spawnRaindrop() {
@@ -67,6 +74,16 @@ public class GameScreen implements Screen {
 		raindrop.height = 64;
 		raindrops.add(raindrop);
 		lastDropTime = TimeUtils.nanoTime();
+	}
+        
+        private void spawnCoin() {
+		Rectangle coin = new Rectangle();
+		coin.x = MathUtils.random(200, 500);
+		coin.y = 480;
+		coin.width = 64;
+		coin.height = 64;
+		coins.add(coin);
+		lastCoinTime = TimeUtils.nanoTime();
 	}
 
 	@Override
@@ -89,9 +106,13 @@ public class GameScreen implements Screen {
 		// all drops
 		game.batch.begin();
 		game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 480);
+                game.font.draw(game.batch, "Coins Collected: " + coinsGathered, 0, 15);
 		game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
 		for (Rectangle raindrop : raindrops) {
 			game.batch.draw(dropImage, raindrop.x, raindrop.y);
+		}
+                for (Rectangle coin : coins) {
+			game.batch.draw(coinImage, coin.x, coin.y);
 		}
 		game.batch.end();
 
@@ -116,22 +137,35 @@ public class GameScreen implements Screen {
 		// check if we need to create a new raindrop
 		if (TimeUtils.nanoTime() - lastDropTime > 1000000000)
 			spawnRaindrop();
-
+                if (TimeUtils.nanoTime() - lastCoinTime > 1000000000)
+			spawnCoin();
 		// move the raindrops, remove any that are beneath the bottom edge of
 		// the screen or that hit the bucket. In the later case we increase the 
 		// value our drops counter and add a sound effect.
-		Iterator<Rectangle> iter = raindrops.iterator();
-		while (iter.hasNext()) {
-			Rectangle raindrop = iter.next();
+		Iterator<Rectangle> iterd = raindrops.iterator();
+		while (iterd.hasNext()) {
+			Rectangle raindrop = iterd.next();
 			raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
 			if (raindrop.y + 64 < 0)
-				iter.remove();
+				iterd.remove();
 			if (raindrop.overlaps(bucket)) {
 				dropsGathered++;
 				dropSound.play();
-				iter.remove();
+				iterd.remove();
 			}
 		}
+		Iterator<Rectangle> iterc = coins.iterator();
+		while (iterc.hasNext()) {
+			Rectangle coin = iterc.next();
+			coin.y -= 200 * Gdx.graphics.getDeltaTime();
+			if (coin.y + 64 < 0)
+				iterc.remove();
+			if (coin.overlaps(bucket)) {
+				coinsGathered++;
+				coinSound.play();
+				iterc.remove();
+			}
+		}                
 	}
 
 	@Override
@@ -162,7 +196,9 @@ public class GameScreen implements Screen {
 		dropImage.dispose();
 		bucketImage.dispose();
 		dropSound.dispose();
+                coinSound.dispose();
 		rainMusic.dispose();
+                coinImage.dispose();
 	}
 
 }
