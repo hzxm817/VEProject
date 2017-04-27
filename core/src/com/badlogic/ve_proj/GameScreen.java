@@ -15,10 +15,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
 
 public class GameScreen implements Screen {
 	final Drop game;
-
+        Timer time;
 	Texture dropImage;
 	Texture bucketImage;
         Texture coinImage;
@@ -64,6 +65,8 @@ public class GameScreen implements Screen {
 		spawnRaindrop();
                 coins = new Array<Rectangle>();
 		spawnCoin();
+                
+                game.scrollingBackground.setSpeedFixed(false);
 	}
 
 	private void spawnRaindrop() {
@@ -165,7 +168,12 @@ public class GameScreen implements Screen {
 				coinSound.play();
 				iterc.remove();
 			}
-		}                
+		} 
+                
+                if (coinsGathered >= 30){
+                    this.dispose();
+                    game.setScreen(new GameOver(game, coinsGathered));
+                }
 	}
 
 	@Override
