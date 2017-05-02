@@ -12,7 +12,7 @@ import com.badlogic.ve_proj.ScrollingBackground;
 
 public class Drop extends Game {
 	
-public static final int WIDTH = 480;
+        public static final int WIDTH = 480;
 	public static final int HEIGHT = 800;
 	public static boolean IS_MOBILE = false;
 	public BitmapFont font;
@@ -33,7 +33,7 @@ public static final int WIDTH = 480;
 		this.setScreen(new MainMenuScreen(this));
 		//Use LibGDX's default Arial font.
 		font = new BitmapFont();
-		this.setScreen(new MainMenuScreen(this));
+		//this.setScreen(new MainMenuScreen(this));
 	}
 
 	public void render() {

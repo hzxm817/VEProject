@@ -50,11 +50,11 @@ public class GameScreen implements Screen {
 
 		// create the camera and the SpriteBatch
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 800, 480);
+		camera.setToOrtho(false, 480, 800);
 
 		// create a Rectangle to logically represent the bucket
 		bucket = new Rectangle();
-		bucket.x = 800 / 2 - 64 / 2; // center the bucket horizontally
+		bucket.x = 480 / 2 - 64 / 2; // center the bucket horizontally
 		bucket.y = 20; // bottom left corner of the bucket is 20 pixels above
 						// the bottom screen edge
 		bucket.width = 64;
@@ -71,8 +71,8 @@ public class GameScreen implements Screen {
 
 	private void spawnRaindrop() {
 		Rectangle raindrop = new Rectangle();
-		raindrop.x = MathUtils.random(0, 800 - 64);
-		raindrop.y = 480;
+		raindrop.x = MathUtils.random(0, 480 - 64);
+		raindrop.y = 800;
 		raindrop.width = 64;
 		raindrop.height = 64;
 		raindrops.add(raindrop);
@@ -81,8 +81,8 @@ public class GameScreen implements Screen {
         
         private void spawnCoin() {
 		Rectangle coin = new Rectangle();
-		coin.x = MathUtils.random(200, 500);
-		coin.y = 480;
+		coin.x = MathUtils.random(0, 480-64);
+		coin.y = 800;
 		coin.width = 64;
 		coin.height = 64;
 		coins.add(coin);
@@ -108,8 +108,9 @@ public class GameScreen implements Screen {
 		// begin a new batch and draw the bucket and
 		// all drops
 		game.batch.begin();
-		game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 480);
-                game.font.draw(game.batch, "Coins Collected: " + coinsGathered, 0, 15);
+                game.batch.draw(coinImage, 0,0);
+		game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 800);
+                game.font.draw(game.batch, "X: " + coinsGathered, 45, 15);
 		game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
 		for (Rectangle raindrop : raindrops) {
 			game.batch.draw(dropImage, raindrop.x, raindrop.y);
@@ -133,8 +134,8 @@ public class GameScreen implements Screen {
 
 		// make sure the bucket stays within the screen bounds
 		if (bucket.x < 0)
-			bucket.x = 800-64;
-		if (bucket.x > 800 - 64)
+			bucket.x = 480-64;
+		if (bucket.x > 480 - 64)
 			bucket.x = 0;
 
 		// check if we need to create a new raindrop
@@ -148,9 +149,9 @@ public class GameScreen implements Screen {
 		Iterator<Rectangle> iterd = raindrops.iterator();
 		while (iterd.hasNext()) {
 			Rectangle raindrop = iterd.next();
-			raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
+			raindrop.y -= 250 * Gdx.graphics.getDeltaTime();
 			if (raindrop.y + 64 < 0)
-				iterd.remove();
+				iterd.remove();                  
 			if (raindrop.overlaps(bucket)) {
 				dropsGathered++;
 				dropSound.play();
@@ -160,7 +161,7 @@ public class GameScreen implements Screen {
 		Iterator<Rectangle> iterc = coins.iterator();
 		while (iterc.hasNext()) {
 			Rectangle coin = iterc.next();
-			coin.y -= 200 * Gdx.graphics.getDeltaTime();
+			coin.y -= 400 * Gdx.graphics.getDeltaTime();
 			if (coin.y + 64 < 0)
 				iterc.remove();
 			if (coin.overlaps(bucket)) {
